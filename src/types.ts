@@ -28,6 +28,9 @@ export interface MarketAsset {
   exchange: string;
   currency: string;
   decimals: number;
+  rsi?: number;
+  volatility?: string;
+  sentimentScore?: number;
 }
 
 export interface CommunityIdea {
@@ -60,6 +63,10 @@ export interface PaperTradePosition {
   currentPrice: number;
   pnl: number;
   pnlPercent: number;
+  stopLoss?: number;
+  takeProfit?: number;
+  leverage?: number;
+  marginUsed?: number;
 }
 
 export interface SpaceStoryChapter {
@@ -69,4 +76,31 @@ export interface SpaceStoryChapter {
   statLabel: string;
   statValue: string;
   iconName: string;
+}
+
+export interface EconomicEvent {
+  id: string;
+  time: string;
+  currency: string;
+  flag: string;
+  event: string;
+  impact: 'high' | 'medium' | 'low';
+  actual: string;
+  forecast: string;
+  previous: string;
+}
+
+export interface OrderBookLevel {
+  price: number;
+  amount: number;
+  total: number;
+}
+
+export interface HeatmapItem {
+  symbol: string;
+  name: string;
+  marketCap: string;
+  changePercent: number;
+  weight: number;
+  sector: string;
 }

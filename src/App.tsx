@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
+import { Navbar, NavViewType } from './components/Navbar';
+import { ProTickerTape } from './components/ProTickerTape';
 import { HeroSection } from './components/HeroSection';
 import { LiveMarketsGrid } from './components/LiveMarketsGrid';
 import { StatsSection } from './components/StatsSection';
 import { InteractiveChartTerminal } from './components/InteractiveChartTerminal';
+import { MarketHeatmapSection } from './components/MarketHeatmapSection';
+import { EconomicCalendarSection } from './components/EconomicCalendarSection';
+import { ProScreenerSection } from './components/ProScreenerSection';
 import { SpaceStoryModal } from './components/SpaceStoryModal';
 import { SearchModal } from './components/SearchModal';
 import { GetStartedModal } from './components/GetStartedModal';
+import { HotkeysModal } from './components/HotkeysModal';
 import { CommunityIdeasSection } from './components/CommunityIdeasSection';
 import { NewsSection } from './components/NewsSection';
 import { BrokersSection } from './components/BrokersSection';
@@ -16,13 +21,14 @@ import { MarketAsset, PaperTradePosition } from './types';
 
 export default function App() {
   const [assets, setAssets] = useState<MarketAsset[]>(initialMarketAssets);
-  const [activeView, setActiveView] = useState<'home' | 'chart' | 'community' | 'news' | 'brokers'>('home');
+  const [activeView, setActiveView] = useState<NavViewType>('home');
   const [selectedAssetForChart, setSelectedAssetForChart] = useState<MarketAsset | null>(null);
 
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isSpaceStoryOpen, setIsSpaceStoryOpen] = useState(false);
   const [isGetStartedOpen, setIsGetStartedOpen] = useState(false);
+  const [isHotkeysOpen, setIsHotkeysOpen] = useState(false);
 
   // Simulation & Paper Trading
   const [isLiveSimulating, setIsLiveSimulating] = useState(true);
@@ -30,12 +36,22 @@ export default function App() {
   const [paperBalance, setPaperBalance] = useState<number>(100000.0);
   const [positions, setPositions] = useState<PaperTradePosition[]>([]);
 
+  // Keyboard shortcut listener for hotkeys '?'
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement)?.tagName)) {
+        setIsHotkeysOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   // Real-time market tick generator
   useEffect(() => {
     if (!isLiveSimulating) return;
 
     const interval = setInterval(() => {
-      // Pick 1 or 2 random assets to tick
       const count = Math.floor(Math.random() * 2) + 1;
       const targetIndices: number[] = [];
 
@@ -129,6 +145,7 @@ export default function App() {
         onOpenGetStarted={() => setIsGetStartedOpen(true)}
         onOpenChart={handleOpenChart}
         onOpenSpaceStory={() => setIsSpaceStoryOpen(true)}
+        onOpenHotkeys={() => setIsHotkeysOpen(true)}
         activeView={activeView}
         setActiveView={setActiveView}
         featuredAsset={assets[0]}
@@ -137,8 +154,15 @@ export default function App() {
         paperBalance={paperBalance}
       />
 
-      {/* Main Screen Views */}
-      <main className="flex-1 flex flex-col">
+      {/* Pro Ticker Tape Bar (Fixed below navbar) */}
+      <ProTickerTape
+        assets={assets}
+        onSelectAsset={handleOpenChart}
+        isLiveSimulating={isLiveSimulating}
+      />
+
+      {/* Main Screen Views with offset for fixed navbar + ticker tape */}
+      <main className="flex-1 flex flex-col pt-[90px]">
         {activeView === 'home' && (
           <>
             {/* Exact Hero Section with Image, Title, Subtitle, CTAs & Space Widget */}
@@ -154,6 +178,21 @@ export default function App() {
               flashingSymbols={flashingSymbols}
             />
 
+            {/* Sector Heatmap & Flow Preview */}
+            <MarketHeatmapSection
+              onSelectSymbol={handleOpenChartBySymbol}
+              allAssets={assets}
+            />
+
+            {/* Technical Screener Preview */}
+            <ProScreenerSection
+              assets={assets}
+              onSelectAsset={handleOpenChart}
+            />
+
+            {/* Economic Calendar */}
+            <EconomicCalendarSection />
+
             {/* Social Proof / Stats Section (60M+, #1, 1.5M+, 8M+) */}
             <StatsSection />
 
@@ -165,8 +204,32 @@ export default function App() {
           </>
         )}
 
+        {activeView === 'heatmap' && (
+          <div className="py-4">
+            <MarketHeatmapSection
+              onSelectSymbol={handleOpenChartBySymbol}
+              allAssets={assets}
+            />
+          </div>
+        )}
+
+        {activeView === 'screener' && (
+          <div className="py-4">
+            <ProScreenerSection
+              assets={assets}
+              onSelectAsset={handleOpenChart}
+            />
+          </div>
+        )}
+
+        {activeView === 'calendar' && (
+          <div className="py-4">
+            <EconomicCalendarSection />
+          </div>
+        )}
+
         {activeView === 'community' && (
-          <div className="pt-16">
+          <div className="py-4">
             <CommunityIdeasSection
               onOpenChart={handleOpenChartBySymbol}
               allAssets={assets}
@@ -175,13 +238,13 @@ export default function App() {
         )}
 
         {activeView === 'news' && (
-          <div className="pt-16">
+          <div className="py-4">
             <NewsSection />
           </div>
         )}
 
         {activeView === 'brokers' && (
-          <div className="pt-16">
+          <div className="py-4">
             <BrokersSection />
           </div>
         )}
@@ -230,6 +293,12 @@ export default function App() {
         onClose={() => setIsGetStartedOpen(false)}
         onConfirm={handleGetStartedConfirm}
         currentBalance={paperBalance}
+      />
+
+      {/* Pro Keyboard Shortcuts Modal */}
+      <HotkeysModal
+        isOpen={isHotkeysOpen}
+        onClose={() => setIsHotkeysOpen(false)}
       />
     </div>
   );
