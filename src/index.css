@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .hero-bg-overlay {
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 10, 10, 0.35) 0%,
+      rgba(10, 10, 10, 0.75) 55%,
+      rgba(10, 10, 10, 0.95) 85%,
+      #0A0A0A 100%
+    );
+  }
+  
+  .glass-panel {
+    background: rgba(18, 18, 18, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(39, 39, 42, 0.8);
+  }
+
+  .glass-card {
+    background: linear-gradient(135deg, rgba(24, 24, 27, 0.8) 0%, rgba(10, 10, 10, 0.95) 100%);
+    backdrop-filter: blur(12px);
+    border: 1px solid #27272a;
+  }
+
+  .elegant-card {
+    background: linear-gradient(135deg, #18181b 0%, #09090b 100%);
+    border: 1px solid #27272a;
+  }
+
+  .font-headline {
+    font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  }
+
+  .font-mono-num {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom Elegant Dark Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0A0A0A;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s infinite ease-in-out;
+}

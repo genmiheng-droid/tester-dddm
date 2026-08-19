@@ -1,0 +1,6 @@
+{
+  "name": "TradingView - Look first / Then leap.",
+  "description": "Financial market charting, live assets, technical indicators, ideas, and trading workspace inspired by TradingView.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
